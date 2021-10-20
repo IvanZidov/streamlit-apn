@@ -20,7 +20,7 @@ st.set_page_config(
 )
 
 st.write("""
-# APN Calculator
+# APN kredit kalkulator
 """)
 st.write('---')
 
