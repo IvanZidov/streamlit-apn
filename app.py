@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
+import altair as alt
 import numpy_financial as npf  
 
 from datetime import datetime, timedelta
@@ -21,7 +21,6 @@ st.set_page_config(
 
 st.write("""
 # APN kredit kalkulator
-Test
 """)
 st.write('---')
 
@@ -49,16 +48,18 @@ naselja = {grad:posto for posto,x in skupine for grad in x }
 
 #Giving Choices
 
+if 'states' not in st.session_state:
+	st.session_state.states = []
 
 
 VRSTA_KREDITA = st.radio("Vrsta kredita:",("APN","Običan stambeni"))
-MJESTO = st.selectbox('Mjesto', [""]+list(naselja.keys()))
-CIJENA = st.number_input("Cijena: ", value=98000)
-KAPARA = st.number_input("Kapara: ", value=8000)
-KAMATA = st.number_input("Kamata: ", value=2.10, format="%.2f")
+CIJENA = st.number_input("Cijena (€): ", value=98000)
+KAPARA = st.number_input("Kapara (€): ", value=8000)
+KAMATA = st.number_input("Kamata (%): ", value=2.10, format="%.2f")
 TRAJANJE = st.slider("Godina otplate: ", 15,30,value=15)
 
 if VRSTA_KREDITA=="APN":
+   MJESTO = st.selectbox('Mjesto', [""]+list(naselja.keys()))
    with st.expander("Postavke APN-a"):
       GODINA_POTPORE = st.radio("Godina subvencije APN-a:",(5,7,9))
       VISINA_SUBVENCIJE = st.number_input("Visina subvencije: ", value=naselja.get(MJESTO,0.36),format="%.2f")
@@ -72,8 +73,6 @@ with st.expander("Dodatne postavke"):
 
 
 MJESECNA_RATA = npf.pmt(KAMATA/100 / 12, TRAJANJE * 12, -(IZNOS_KREDITA)) 
-
-st.write("Mjesecno: ***{:,.2f}***".format(round((MJESECNA_RATA),2)))
 
 st.write('---')
 
@@ -135,6 +134,21 @@ st.metric("Ukupno plaćeno banci:",value=str(UKUPNO_PLACENO)+" €")
 st.write('''# Ukupna cijena nekretnine:''')
 UKUPNA_CIJENA_NEKRETNINE = UKUPNO_PLACENO + UKUPNI_TROSKOVI
 st.metric("Ukupna cijena nekretnine:",value=str(UKUPNA_CIJENA_NEKRETNINE)+" €")
+
+
+def save_state():
+   print()
+
+increment = st.button('Save')
+if increment:
+    st.session_state.states.append(UKUPNA_CIJENA_NEKRETNINE)
+
+reset = st.button('Reset')
+if reset:
+    st.session_state.states = []
+st.write(st.session_state.states)
+
+
 
 
 st.write(" ")
