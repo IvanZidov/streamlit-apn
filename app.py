@@ -21,6 +21,7 @@ st.set_page_config(
 
 st.write("""
 # APN kredit kalkulator
+Test
 """)
 st.write('---')
 
@@ -60,7 +61,7 @@ TRAJANJE = st.slider("Godina otplate: ", 15,30,value=15)
 if VRSTA_KREDITA=="APN":
    with st.expander("Postavke APN-a"):
       GODINA_POTPORE = st.radio("Godina subvencije APN-a:",(5,7,9))
-      VISINA_SUBVENCIJE = st.number_input("Visina subvencije: ", value=naselja.get(MJESTO,0.3),format="%.2f")
+      VISINA_SUBVENCIJE = st.number_input("Visina subvencije: ", value=naselja.get(MJESTO,0.36),format="%.2f")
 
 with st.expander("Dodatne postavke"):
    POREZ = st.radio("Porez:",("Da","Ne"))
