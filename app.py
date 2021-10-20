@@ -77,63 +77,104 @@ MJESECNA_RATA = npf.pmt(KAMATA/100 / 12, TRAJANJE * 12, -(IZNOS_KREDITA))
 st.write('---')
 
 #Reformat Historical Date for next function
-st.write('''# Izračun''')
-
-st.write('''### Troškovi''')
 
 UKUPNI_TROSKOVI = KAPARA
 col1, col2, col3 = st.columns(3)
-col1.metric("Kapara",value=str(KAPARA)+" €")
+#col1.metric("Kapara",value=str(KAPARA)+" €")
 if POREZ=="Da":
-   col2.metric("Porez",value=str(round(CIJENA*0.03,2))+" €")
+#   col2.metric("Porez",value=str(round(CIJENA*0.03,2))+" €")
    UKUPNI_TROSKOVI+=round(CIJENA*0.03,2)
-else:
-   col2.metric("Porez",value="0 €")
-col3.metric("Akvizicija",value=str(round(CIJENA*0.005,2))+" €")
+
+#col3.metric("Akvizicija",value=str(round(CIJENA*0.005,2))+" €")
 UKUPNI_TROSKOVI+=round(CIJENA*0.005,2)
 
-st.metric("Ukupni troškovi",value=str(round(UKUPNI_TROSKOVI,2))+" €")
+#st.metric("Ukupni troškovi",value=str(round(UKUPNI_TROSKOVI,2))+" €")
 
 
 
-st.write('''### Mjesečna rata''')
+#st.write('''### Mjesečna rata''')
 
-col1, col2 = st.columns(2)
-col1.metric("Anuitet u kunama",value=str(round(MJESECNA_RATA*TECAJ_EURA,2))+" kn")
-col2.metric("Anuitet u eurima",value=str(round(MJESECNA_RATA,2))+" €")
+#col1, col2 = st.columns(2)
+#col1.metric("Anuitet u kunama",value=str(round(MJESECNA_RATA*TECAJ_EURA,2))+" kn")
+#col2.metric("Anuitet u eurima",value=str(round(MJESECNA_RATA,2))+" €")
 
 UKUPNI_IZNOS_POTPORE = 0
 
 if VRSTA_KREDITA=="APN":
-   st.write('''### Mjesečna rata APN''')
+   #st.write('''### Mjesečna rata APN''')
    if IZNOS_KREDITA > 100000:
       MJESECNA_RATA_APN = (100000/IZNOS_KREDITA) * MJESECNA_RATA * (1 - VISINA_SUBVENCIJE) + (1 - (100000/IZNOS_KREDITA)) * MJESECNA_RATA
    else:
       MJESECNA_RATA_APN = MJESECNA_RATA * (1 - VISINA_SUBVENCIJE)
    MJESECNA_POTPORA = MJESECNA_RATA - MJESECNA_RATA_APN
 
-   col1, col2 = st.columns(2)
-   col1.metric("Anuitet u kunama",value=str(round(MJESECNA_RATA_APN*TECAJ_EURA,2))+" kn", delta="-"+str(round(MJESECNA_POTPORA*TECAJ_EURA,2))+" kn",delta_color="inverse")
-   col2.metric("Anuitet u eurima",value=str(round(MJESECNA_RATA_APN,2))+" €", delta="-"+str(round(MJESECNA_POTPORA,2))+" €",delta_color="inverse")
+   #col1, col2 = st.columns(2)
+   #col1.metric("Anuitet u kunama",value=str(round(MJESECNA_RATA_APN*TECAJ_EURA,2))+" kn", delta="-"+str(round(MJESECNA_POTPORA*TECAJ_EURA,2))+" kn",delta_color="inverse")
+   #col2.metric("Anuitet u eurima",value=str(round(MJESECNA_RATA_APN,2))+" €", delta="-"+str(round(MJESECNA_POTPORA,2))+" €",delta_color="inverse")
 
    UKUPNI_IZNOS_POTPORE = round(MJESECNA_POTPORA*GODINA_POTPORE*12,2)
-   st.metric("Ukupni iznos potpore:",value=str(UKUPNI_IZNOS_POTPORE)+" €")
+   #st.metric("Ukupni iznos potpore:",value=str(UKUPNI_IZNOS_POTPORE)+" €")
 
-st.write('''### Ukupni iznos potpore:''')
+#st.write('''### Ukupni iznos potpore:''')
 UKUPNI_KREDIT = round(MJESECNA_RATA*TRAJANJE*12,2)
-st.metric("Ukupni iznos kredita:",value=str(UKUPNI_KREDIT)+" €")
+#st.metric("Ukupni iznos kredita:",value=str(UKUPNI_KREDIT)+" €")
 UKUPNE_KAMATE = round(UKUPNI_KREDIT-IZNOS_KREDITA,2)
-st.metric("Ukupne kamate:",value=str(UKUPNE_KAMATE)+" €")
+#st.metric("Ukupne kamate:",value=str(UKUPNE_KAMATE)+" €")
 
 
-st.write('''### Ukupno plaćeno banci:''')
+#st.write('''### Ukupno plaćeno banci:''')
 UKUPNO_PLACENO = round(UKUPNI_KREDIT-UKUPNI_IZNOS_POTPORE,2)
-st.metric("Ukupno plaćeno banci:",value=str(UKUPNO_PLACENO)+" €")
+#st.metric("Ukupno plaćeno banci:",value=str(UKUPNO_PLACENO)+" €")
 
 
-st.write('''# Ukupna cijena nekretnine:''')
+#st.write('''# Ukupna cijena nekretnine:''')
 UKUPNA_CIJENA_NEKRETNINE = UKUPNO_PLACENO + UKUPNI_TROSKOVI
-st.metric("Ukupna cijena nekretnine:",value=str(UKUPNA_CIJENA_NEKRETNINE)+" €")
+#st.metric("Ukupna cijena nekretnine:",value=str(UKUPNA_CIJENA_NEKRETNINE)+" €")
+
+st.write('''# Izračun''')
+st.metric("Anuitet u eurima",value=str(round(MJESECNA_RATA,2))+" €")
+st.metric("Ukupna cijena nekretnine:",value=str(UKUPNA_CIJENA_NEKRETNINE)+" €", delta=str(round(UKUPNA_CIJENA_NEKRETNINE-CIJENA,2))+" €",delta_color="inverse")
+
+with st.expander("Više informacija"):
+   col1, col2, col3 = st.columns(3)
+   col1.metric("Kapara",value=str(KAPARA)+" €")
+   if POREZ=="Da":
+      col2.metric("Porez",value=str(round(CIJENA*0.03,2))+" €")
+   else:
+      col2.metric("Porez",value="0 €")
+   col3.metric("Akvizicija",value=str(round(CIJENA*0.005,2))+" €")
+   st.metric("Ukupni troškovi",value=str(round(UKUPNI_TROSKOVI,2))+" €")
+
+   st.write("---")
+
+   st.write('''### Mjesečna rata''')
+
+   col1, col2 = st.columns(2)
+   col1.metric("Anuitet u kunama",value=str(round(MJESECNA_RATA*TECAJ_EURA,2))+" kn")
+   col2.metric("Anuitet u eurima",value=str(round(MJESECNA_RATA,2))+" €")
+
+   if VRSTA_KREDITA=="APN":
+      st.write('''### Mjesečna rata APN''')
+
+      col1, col2 = st.columns(2)
+      col1.metric("Anuitet u kunama",value=str(round(MJESECNA_RATA_APN*TECAJ_EURA,2))+" kn", delta="-"+str(round(MJESECNA_POTPORA*TECAJ_EURA,2))+" kn",delta_color="inverse")
+      col2.metric("Anuitet u eurima",value=str(round(MJESECNA_RATA_APN,2))+" €", delta="-"+str(round(MJESECNA_POTPORA,2))+" €",delta_color="inverse")
+
+      st.metric("Ukupni iznos potpore:",value=str(UKUPNI_IZNOS_POTPORE)+" €")
+
+   st.write("---")
+
+   st.write('''### Ukupni iznos potpore:''')
+   st.metric("Ukupni iznos kredita:",value=str(UKUPNI_KREDIT)+" €")
+   st.metric("Ukupne kamate:",value=str(UKUPNE_KAMATE)+" €")
+
+
+   st.write('''### Ukupno plaćeno banci:''')
+   st.metric("Ukupno plaćeno banci:",value=str(UKUPNO_PLACENO)+" €")
+
+
+   st.write('''# Ukupna cijena nekretnine:''')
+   st.metric("Ukupna cijena nekretnine:",value=str(UKUPNA_CIJENA_NEKRETNINE)+" €")
 
 
 def save_state():
