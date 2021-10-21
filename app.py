@@ -41,6 +41,8 @@ st.write(
 
 if "states" not in st.session_state:
     st.session_state.states = []
+if "kredit_no" not in st.session_state:
+    st.session_state.kredit_no = 0
 
 with st.container():
     VRSTA_KREDITA = st.radio("Vrsta kredita:", ("APN", "Običan stambeni"))
@@ -249,16 +251,49 @@ with st.expander("Više informacija"):
     )
 
 
-def save_state():
-    print()
 
 
 increment = st.button("Save")
 if increment:
+    st.session_state.kredit_no += 1
+    CREDIT_SUMMARY["IME"] = "Model"+str(st.session_state.kredit_no)
     st.session_state.states.append({**CREDIT_CONFIG, **CREDIT_SUMMARY})
 
 reset = st.button("Reset")
 if reset:
     st.session_state.states = []
-st.write(st.session_state.states)
 
+
+import pandas as pd
+import numpy as np
+import altair as alt
+import streamlit as st
+
+if st.session_state.states != []:
+
+    df = pd.DataFrame(
+        st.session_state.states
+        )
+
+    c = alt.Chart(df).mark_bar().encode(
+        x='IME',
+        y='UKUPNA_CIJENA_NEKRETNINE',
+        tooltip = ['VRSTA_KREDITA', 'CIJENA', 'TRAJANJE', 'GODINA_POTPORE', 'MJESECNA_RATA', 'MJESECNA_RATA_APN', 'UKUPNI_IZNOS_POTPORE', 'UKUPNA_CIJENA_NEKRETNINE']
+    )
+
+    st.altair_chart(c, use_container_width=True)
+
+    d = alt.Chart(df).transform_fold(
+        ['MJESECNA_RATA', 'MJESECNA_RATA_APN']
+        ).mark_bar().encode(
+        x=alt.X('key:N', axis=alt.Axis(title='')),
+        y=alt.Y('value:Q', axis=alt.Axis(title='Rata u €')),
+        color=alt.Color('key:N',title=""),
+        column = alt.Column("IME:N", title='Krediti'),
+        tooltip = ['VRSTA_KREDITA', 'CIJENA', 'TRAJANJE', 'GODINA_POTPORE', 'MJESECNA_RATA', 'MJESECNA_RATA_APN', 'UKUPNI_IZNOS_POTPORE', 'UKUPNA_CIJENA_NEKRETNINE']
+
+        ).properties(
+            width='container'
+        )
+    
+    st.altair_chart(d, use_container_width=True)
