@@ -3,7 +3,12 @@ import numpy_financial as npf
 import pandas as pd
 import streamlit as st
 import pickle
-# st.set_option("server.runOnSave", True)
+
+# Load Data
+with open(r"./skupine.p", "rb") as input_file:
+    skupine = pickle.load(input_file)
+with open(r"./naselja.p", "rb") as input_file:
+    naselja = pickle.load(input_file)
 
 st.set_page_config(
     page_title="APN kredit kalkulator",
@@ -30,11 +35,7 @@ st.write(
 )
 
 
-# Load Data
-with open(r"./skupine.p", "rb") as input_file:
-    skupine = pickle.load(input_file)
-with open(r"./naselja.p", "rb") as input_file:
-    naselja = pickle.load(input_file)
+
 
 # Giving Choices
 
@@ -96,6 +97,7 @@ st.write("---")
 
 
 MJESECNA_RATA = npf.pmt(KAMATA / 100 / 12, TRAJANJE * 12, -(IZNOS_KREDITA))
+MJESECNA_RATA = round(MJESECNA_RATA,2)
 
 UKUPNI_TROSKOVI = KAPARA
 if POREZ == "Da":
@@ -117,7 +119,10 @@ if VRSTA_KREDITA == "APN":
         ) + (1 - (100000 / IZNOS_KREDITA)) * MJESECNA_RATA
     else:
         MJESECNA_RATA_APN = MJESECNA_RATA * (1 - VISINA_SUBVENCIJE)
+    MJESECNA_RATA_APN = round(MJESECNA_RATA_APN,2)
+
     MJESECNA_POTPORA = MJESECNA_RATA - MJESECNA_RATA_APN
+    MJESECNA_POTPORA = round(MJESECNA_POTPORA,2)
     UKUPNI_IZNOS_POTPORE = round(MJESECNA_POTPORA * GODINA_POTPORE * 12, 2)
 
 UKUPNI_KREDIT = round(MJESECNA_RATA * TRAJANJE * 12, 2)
@@ -125,7 +130,7 @@ UKUPNE_KAMATE = round(UKUPNI_KREDIT - IZNOS_KREDITA, 2)
 UKUPNO_PLACENO = round(UKUPNI_KREDIT - UKUPNI_IZNOS_POTPORE, 2)
 UKUPNA_CIJENA_NEKRETNINE = UKUPNO_PLACENO + UKUPNI_TROSKOVI
 
-KREDIT_SUMMARY = {
+CREDIT_SUMMARY = {
     "MJESECNA_RATA" : MJESECNA_RATA,
     "UKUPNI_TROSKOVI" : UKUPNI_TROSKOVI,
     "MJESECNA_RATA_APN" : MJESECNA_RATA_APN,
@@ -139,14 +144,36 @@ KREDIT_SUMMARY = {
 
 #### Prikaz
 
-st.write("""# Izračun""")
-st.metric("""Anuitet u eurima""", value=str(round(MJESECNA_RATA, 2)) + " €")
-st.metric(
+st.write("""## Mjesečna rata""")
+if VRSTA_KREDITA=="APN":
+    col1, col2 = st.columns(2)
+    col1.metric(
+                "Anuitet u eurima za vrijeme APN-a",
+                value=str(round(MJESECNA_RATA_APN, 2)) + " €",
+                delta="-" + str(round(MJESECNA_POTPORA, 2)) + " €",
+                delta_color="inverse",
+            )
+
+    col2.metric(
+            "Anuitet u eurima", value=str(round(MJESECNA_RATA, 2)) + " €"
+    )
+else:
+    st.metric(
+            "Anuitet u eurima", value=str(round(MJESECNA_RATA, 2)) + " €"
+    )
+st.write("---")
+st.write("""## Ukupno""")
+col1, col2 = st.columns(2)
+col1.metric(
     "Ukupna cijena nekretnine:",
     value=str(UKUPNA_CIJENA_NEKRETNINE) + " €",
     delta=str(round(UKUPNA_CIJENA_NEKRETNINE - CIJENA, 2)) + " €",
     delta_color="inverse",
 )
+
+col2.metric("Ukupni iznos potpore:", value=str(UKUPNI_IZNOS_POTPORE+SUBVENCIJA) + " €")
+
+st.write("---")
 
 with st.expander("Više informacija"):
     st.write("""## Početni troškovi""")
@@ -228,7 +255,7 @@ def save_state():
 
 increment = st.button("Save")
 if increment:
-    st.session_state.states.append(KREDIT_SUMMARY)
+    st.session_state.states.append({**CREDIT_CONFIG, **CREDIT_SUMMARY})
 
 reset = st.button("Reset")
 if reset:
