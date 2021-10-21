@@ -638,12 +638,12 @@ if "states" not in st.session_state:
 
 with st.container():
     VRSTA_KREDITA = st.radio("Vrsta kredita:", ("APN", "Običan stambeni"))
-    CIJENA = st.number_input("Cijena (€): ", value=98000)
-    KAPARA = st.number_input("Kapara (€): ", value=8000)
+    CIJENA = st.number_input("Cijena nekretnine (€): ", value=98000, min_value=0)
+    KAPARA = st.number_input("Kapara (€): ", value=8000, min_value=0)
     if VRSTA_KREDITA == "APN":
-        KAMATA = st.number_input("Kamata (%): ", value=2.10, format="%.2f")
+        KAMATA = st.number_input("Kamata (%): ", value=2.10, format="%.2f", min_value=0.00)
     else:
-        KAMATA = st.number_input("Kamata (%): ", value=2.90, format="%.2f")
+        KAMATA = st.number_input("Kamata (%): ", value=2.90, format="%.2f", min_value=0.00)
     TRAJANJE = st.slider("Godina otplate: ", 15, 30, value=15)
 
     GODINA_POTPORE = 0
@@ -655,14 +655,14 @@ with st.container():
             GODINA_POTPORE = st.radio("Godina subvencije APN-a:", (5, 7, 9))
             MJESTO = st.selectbox("Mjesto", [""] + sorted(list(naselja.keys())))
             VISINA_SUBVENCIJE = st.number_input(
-                "Visina subvencije: ", value=naselja.get(MJESTO, 0.36), format="%.2f"
+                "Visina subvencije: ", value=naselja.get(MJESTO, 0.36), format="%.2f", min_value=0.30, max_value=0.51
             )
 
     with st.expander("Dodatne postavke"):
         POREZ = st.radio("Porez:", ("Da", "Ne"))
-        IZNOS_KREDITA = st.number_input("Iznos kredita: ", value=CIJENA - KAPARA)
-        SUBVENCIJA = st.number_input("Dodatna subvencija: ", value=0)
-        TECAJ_EURA = st.number_input("Tečaj eura: ", value=7.51, format="%.2f")
+        IZNOS_KREDITA = st.number_input("Iznos kredita: ", value=round(CIJENA - KAPARA), min_value=0)
+        SUBVENCIJA = st.number_input("Dodatna subvencija: ", value=0, min_value=0)
+        TECAJ_EURA = st.number_input("Tečaj eura: ", value=7.51, format="%.2f", min_value=0.00)
 
 CREDIT_CONFIG = {
    "VRSTA_KREDITA" : VRSTA_KREDITA,
@@ -744,7 +744,7 @@ st.metric(
 )
 
 with st.expander("Više informacija"):
-    st.write("""### Početni troškovi""")
+    st.write("""## Početni troškovi""")
     col1, col2, col3, col4 = st.columns(4)
     col1.metric("Kapara", value=str(KAPARA) + " €")
     if POREZ == "Da":
@@ -762,7 +762,7 @@ with st.expander("Više informacija"):
 
     st.write("---")
 
-    st.write("""### Mjesečna rata""")
+    st.write("""## Mjesečna rata""")
 
     col1, col2 = st.columns(2)
     col1.metric(
@@ -771,39 +771,50 @@ with st.expander("Više informacija"):
     col2.metric("Anuitet u eurima", value=str(round(MJESECNA_RATA, 2)) + " 💶")
 
     if VRSTA_KREDITA == "APN":
-        st.write("---")
-        st.write("""### Mjesečna rata APN""")
+        
+        st.write("""#### Mjesečna rata APN""")
 
         col1, col2 = st.columns(2)
         col1.metric(
-            "Anuitet u kunama",
+            "Anuitet u kunama APN",
             value=str(round(MJESECNA_RATA_APN * TECAJ_EURA, 2)) + " kn",
             delta="-" + str(round(MJESECNA_POTPORA * TECAJ_EURA, 2)) + " kn",
             delta_color="inverse",
         )
         col2.metric(
-            "Anuitet u eurima",
+            "Anuitet u eurima APN",
             value=str(round(MJESECNA_RATA_APN, 2)) + " 💶",
             delta="-" + str(round(MJESECNA_POTPORA, 2)) + " €",
             delta_color="inverse",
         )
 
-        st.write("---")
-        st.write("""### Ukupna APN subvencija""")
-
-        st.metric("Ukupni iznos potpore:", value=str(UKUPNI_IZNOS_POTPORE) + " €")
 
     st.write("---")
 
-    st.write("""### Ukupni iznos potpore:""")
-    st.metric("Ukupni iznos kredita:", value=str(UKUPNI_KREDIT) + " €")
-    st.metric("Ukupne kamate:", value=str(UKUPNE_KAMATE) + " €")
+    st.write("""## Ukupni iznosi:""")
+    st.write("""#### O kreditu""")
+    col1, col2 = st.columns(2)
+    col1.metric("Ukupni iznos kredita:", value=str(UKUPNI_KREDIT) + " €")
+    col2.metric("Ukupne kamate:", value=str(UKUPNE_KAMATE) + " €")
 
-    st.write("""### Ukupno plaćeno banci:""")
-    st.metric("Ukupno plaćeno banci:", value=str(UKUPNO_PLACENO) + " €")
+    #st.write("---")
+    #st.write("""## Ukupna APN subvencija""")
+    st.write("""#### Potpora i troškovi""")
+    col1, col2 = st.columns(2)
+    col1.metric("Ukupni iznos potpore:", value=str(UKUPNI_IZNOS_POTPORE+SUBVENCIJA) + " €")
+    col2.metric("Ukupni troškovi", value=str(round(UKUPNI_TROSKOVI, 2)) + " €")
+    #st.write("""### Ukupno plaćeno banci:""")
+    #st.metric("Ukupno plaćeno banci:", value=str(UKUPNO_PLACENO) + " €")
+
+    st.write("---")
 
     st.write("""# Ukupna cijena nekretnine:""")
-    st.metric("Ukupna cijena nekretnine:", value=str(UKUPNA_CIJENA_NEKRETNINE) + " €")
+    st.metric(
+        "Ukupna cijena nekretnine:",
+        value=str(UKUPNA_CIJENA_NEKRETNINE) + " €",
+        delta=str(round(UKUPNA_CIJENA_NEKRETNINE - CIJENA, 2)) + " €",
+        delta_color="inverse",
+    )
 
 
 def save_state():
