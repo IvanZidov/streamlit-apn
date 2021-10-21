@@ -271,23 +271,19 @@ import numpy as np
 import altair as alt
 import streamlit as st
 
-with st.expander("Vizualizacije"):
 
-
-    if st.session_state.states != []:
+if st.session_state.states != []:
+    with st.expander("Vizualizacije"):
 
         df = pd.DataFrame(
             st.session_state.states
             )
-
         c = alt.Chart(df).mark_bar().encode(
             x='IME',
             y='UKUPNA_CIJENA_NEKRETNINE',
             tooltip = ['VRSTA_KREDITA', 'CIJENA', 'TRAJANJE', 'GODINA_POTPORE', 'MJESECNA_RATA', 'MJESECNA_RATA_APN', 'UKUPNI_IZNOS_POTPORE', 'UKUPNA_CIJENA_NEKRETNINE']
         )
-
         st.altair_chart(c, use_container_width=True)
-
         d = alt.Chart(df).transform_fold(
             ['MJESECNA_RATA', 'MJESECNA_RATA_APN']
             ).mark_bar().encode(
@@ -296,7 +292,6 @@ with st.expander("Vizualizacije"):
             color=alt.Color('key:N',title="",legend=None),
             column = alt.Column("IME:N", title='Krediti'),
             tooltip = ['VRSTA_KREDITA', 'CIJENA', 'TRAJANJE', 'GODINA_POTPORE', 'MJESECNA_RATA', 'MJESECNA_RATA_APN', 'UKUPNI_IZNOS_POTPORE', 'UKUPNA_CIJENA_NEKRETNINE']
-
             ).properties(
                 width=100
             )
