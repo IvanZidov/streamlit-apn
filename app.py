@@ -3,43 +3,9 @@ import numpy_financial as npf
 import pandas as pd
 import streamlit as st
 import pickle
-import pathlib
-import os
-import re
 import streamlit.components.v1 as components
 
-html_string = '''
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5120710790836463"
-     crossorigin="anonymous"></script>
-<ins class="adsbygoogle"
-     style="display:block; text-align:center;"
-     data-ad-layout="in-article"
-     data-ad-format="fluid"
-     data-ad-client="ca-pub-5120710790836463"
-     data-ad-slot="8894749798"></ins>
-<script>
-     (adsbygoogle = window.adsbygoogle || []).push({});
-</script>
-'''
 
-a=os.path.dirname(st.__file__)+'/static/index.html'
-with open(a, 'r') as f:
-    data=f.read()
-    if len(re.findall('UA-', data))==0:
-        with open(a, 'w') as ff:
-            newdata=re.sub('<head>','<head>'+html_string,data)
-            ff.write(newdata)
-
-#GA_JS = """Hello world!"""
-#
-## Insert the script in the head tag of the static template inside your virtual environement
-#index_path = pathlib.Path(st.__file__).parent / "static" / "index.html"
-#soup = BeautifulSoup(index_path.read_text(), features="lxml")
-#if not soup.find(id='custom-js'):
-#    script_tag = soup.new_tag("script", id='custom-js')
-#    script_tag.string = GA_JS
-#    soup.head.append(script_tag)
-#    index_path.write_text(str(soup))
 
 
 
@@ -49,17 +15,17 @@ with open(r"./skupine.p", "rb") as input_file:
 with open(r"./naselja.p", "rb") as input_file:
     naselja = pickle.load(input_file)
 
-#st.set_page_config(
-#    page_title="APN kredit kalkulator",
-#    page_icon="🏠",
-    # layout="wide",
-    # initial_sidebar_state="expanded",
-    # menu_items={
-    #    'Get Help': 'https://www.extremelycoolapp.com/help',
-    #    'Report a bug': "https://www.extremelycoolapp.com/bug",
-    #    'About': "# This is a header. This is an *extremely* cool app!"
-    # }
-#)
+st.set_page_config(
+    page_title="APN kredit kalkulator",
+    page_icon="🏠",
+   # layout="wide",
+   # initial_sidebar_state="expanded",
+   # menu_items={
+   #    'Get Help': 'https://www.extremelycoolapp.com/help',
+   #    'Report a bug': "https://www.extremelycoolapp.com/bug",
+   #    'About': "# This is a header. This is an *extremely* cool app!"
+   # }
+)
 
 st.write(
     """
@@ -73,9 +39,6 @@ st.write(
     "[Photo by Tierra Mallorca](https://unsplash.com/@tierramallorca?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText)"
 )
 
-
-st.markdown(html_string, unsafe_allow_html=True)
-components.html(html_string)
 
 
 # Giving Choices
@@ -314,34 +277,33 @@ import streamlit as st
 
 with st.expander("Vizualizacije"):
     st.empty()
-    if st.session_state.states != []:
-
-        df = pd.DataFrame(
-            st.session_state.states
-            )
-
-        c = alt.Chart(df).mark_bar().encode(
-            x='IME',
-            y='UKUPNA_CIJENA_NEKRETNINE',
-            tooltip = ['VRSTA_KREDITA', 'CIJENA', 'TRAJANJE', 'GODINA_POTPORE', 'MJESECNA_RATA', 'MJESECNA_RATA_APN', 'UKUPNI_IZNOS_POTPORE', 'UKUPNA_CIJENA_NEKRETNINE']
+    CREDIT_SUMMARY["IME"] = "Temp"
+    df = pd.DataFrame(
+        st.session_state.states + [{**CREDIT_CONFIG, **CREDIT_SUMMARY}]
         )
 
-        st.altair_chart(c, use_container_width=True)
+    c = alt.Chart(df).mark_bar().encode(
+        x='IME',
+        y='UKUPNA_CIJENA_NEKRETNINE',
+        tooltip = ['VRSTA_KREDITA', 'CIJENA', 'TRAJANJE', 'GODINA_POTPORE', 'MJESECNA_RATA', 'MJESECNA_RATA_APN', 'UKUPNI_IZNOS_POTPORE', 'UKUPNA_CIJENA_NEKRETNINE']
+    )
 
-        d = alt.Chart(df).transform_fold(
-            ['MJESECNA_RATA', 'MJESECNA_RATA_APN']
-            ).mark_bar().encode(
-            x=alt.X('key:N', axis=alt.Axis(title='')),
-            y=alt.Y('value:Q', axis=alt.Axis(title='Rata u €')),
-            color=alt.Color('key:N',title="",legend=None),
-            column = alt.Column("IME:N", title='Krediti'),
-            tooltip = ['VRSTA_KREDITA', 'CIJENA', 'TRAJANJE', 'GODINA_POTPORE', 'MJESECNA_RATA', 'MJESECNA_RATA_APN', 'UKUPNI_IZNOS_POTPORE', 'UKUPNA_CIJENA_NEKRETNINE']
+    st.altair_chart(c, use_container_width=True)
 
-            ).properties(
-                width=100
-            )
-        
-        st.altair_chart(d, use_container_width=False)
+    d = alt.Chart(df).transform_fold(
+        ['MJESECNA_RATA', 'MJESECNA_RATA_APN']
+        ).mark_bar().encode(
+        x=alt.X('key:N', axis=alt.Axis(title='')),
+        y=alt.Y('value:Q', axis=alt.Axis(title='Rata u €')),
+        color=alt.Color('key:N',title="",legend=None),
+        column = alt.Column("IME:N", title='Krediti'),
+        tooltip = ['VRSTA_KREDITA', 'CIJENA', 'TRAJANJE', 'GODINA_POTPORE', 'MJESECNA_RATA', 'MJESECNA_RATA_APN', 'UKUPNI_IZNOS_POTPORE', 'UKUPNA_CIJENA_NEKRETNINE']
+
+        ).properties(
+            width=100
+        )
+    
+    st.altair_chart(d, use_container_width=False)
 
 st.write("---")
 reset = st.button("Reset")
