@@ -7,8 +7,6 @@ import pickle
 import streamlit.components.v1 as components
 
 html_string = '''
-<h1>HTML string in RED</h1>
-
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5120710790836463"
      crossorigin="anonymous"></script>
 <!-- Oglas -->
@@ -23,8 +21,8 @@ html_string = '''
 </script>
 '''
 
-components.html(html_string)
-st.markdown(html_string, unsafe_allow_html=True)
+#components.html(html_string)
+#st.markdown(html_string, unsafe_allow_html=True)
 
 # Load Data
 with open(r"./skupine.p", "rb") as input_file:
@@ -32,9 +30,9 @@ with open(r"./skupine.p", "rb") as input_file:
 with open(r"./naselja.p", "rb") as input_file:
     naselja = pickle.load(input_file)
 
-#st.set_page_config(
-#    page_title="APN kredit kalkulator",
-#    page_icon="🏠",
+st.set_page_config(
+    page_title="APN kredit kalkulator",
+    page_icon="🏠",
     # layout="wide",
     # initial_sidebar_state="expanded",
     # menu_items={
@@ -42,7 +40,7 @@ with open(r"./naselja.p", "rb") as input_file:
     #    'Report a bug': "https://www.extremelycoolapp.com/bug",
     #    'About': "# This is a header. This is an *extremely* cool app!"
     # }
-#)
+)
 
 st.write(
     """
