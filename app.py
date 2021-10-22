@@ -11,9 +11,20 @@ html_string = '''
 
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5120710790836463"
      crossorigin="anonymous"></script>
+<!-- Oglas -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-5120710790836463"
+     data-ad-slot="2962113878"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
 '''
 
 components.html(html_string)
+st.markdown(html_string, unsafe_allow_html=True)
 
 # Load Data
 with open(r"./skupine.p", "rb") as input_file:
