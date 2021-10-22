@@ -6,7 +6,6 @@ import pickle
 import pathlib
 import os
 import re
-from bs4 import BeautifulSoup
 import streamlit.components.v1 as components
 
 html_string = '''
