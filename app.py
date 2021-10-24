@@ -76,14 +76,14 @@ if VRSTA_KREDITA_1 == "APN":
     KAMATA_1 = stupac1.number_input("Kamata (%): ", value=2.10, format="%.2f", min_value=0.00)
 else:
     KAMATA_1 = stupac1.number_input("Kamata (%): ", value=2.90, format="%.2f", min_value=0.00)
-TRAJANJE_1 = stupac1.slider("Godina otplate: ", 15, 30, value=15)
+TRAJANJE_1 = stupac1.number_input("Godina otplate: ", 15, 30, value=15)
 
 VRSTA_KREDITA_2 = stupac2.radio("Vrsta kredita:", ("APN", "Običan stambeni"),key="2",index=1)
 if VRSTA_KREDITA_2 == "APN":
     KAMATA_2 = stupac2.number_input("Kamata (%): ", value=2.10, format="%.2f", min_value=0.00,key="2")
 else:
     KAMATA_2 = stupac2.number_input("Kamata (%): ", value=2.90, format="%.2f", min_value=0.00,key="2")
-TRAJANJE_2 = stupac2.slider("Godina otplate: ", 15, 30, value=15,key="2")
+TRAJANJE_2 = stupac2.number_input("Godina otplate: ", 15, 30, value=15,key="2")
 
 
 
