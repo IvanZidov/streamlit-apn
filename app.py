@@ -189,7 +189,6 @@ class Kredit:
     
     def show_results(self,container):
     #### Prikaz
-        container.write("---")
 
         container.write("""## Mjesečna rata""")
         if self.VRSTA_KREDITA=="APN":
@@ -311,6 +310,7 @@ class Kredit:
 #    container.success('Uspješno spremljen kredit!')
 
 
+col1, col2 = st.columns(2)
 
 kredit1 = Kredit(CREDIT_CONFIG)
 kredit2 = Kredit(CREDIT_CONFIG2)
@@ -318,8 +318,8 @@ kredit2 = Kredit(CREDIT_CONFIG2)
 CREDIT_SUMMARY = kredit1.calculate_credit()
 CREDIT_SUMMARY2 = kredit2.calculate_credit()
 
-kredit1.show_results(stupac1)
-kredit2.show_results(stupac2)
+kredit1.show_results(col1)
+kredit2.show_results(col2)
 
 #st.write(CREDIT_SUMMARY)
 #st.write(CREDIT_SUMMARY2)
@@ -335,46 +335,67 @@ for key,value in CREDIT_SUMMARY.items():
 
 
 
+
+import pandas as pd
+import numpy as np
+import altair as alt
+import streamlit as st
+
+st.write("---")
+
+with st.expander("Vizualizacije"):
+    st.empty()
+    CREDIT_SUMMARY["IME"] = "Kredit 1"
+    CREDIT_SUMMARY2["IME"] = "Kredit 2"
+    df = pd.DataFrame(
+        [{**CREDIT_CONFIG, **CREDIT_SUMMARY}] + [{**CREDIT_CONFIG2, **CREDIT_SUMMARY2}]
+        )
+
+    c = alt.Chart(df).mark_bar().encode(
+        x='IME',
+        y='UKUPNA_CIJENA_NEKRETNINE',
+        color = "IME:N",
+        tooltip = ['VRSTA_KREDITA', 'CIJENA', 'TRAJANJE', 'GODINA_POTPORE', 'MJESECNA_RATA', 'MJESECNA_RATA_APN', 'UKUPNI_IZNOS_POTPORE', 'UKUPNA_CIJENA_NEKRETNINE']
+    )
+
+    st.altair_chart(c, use_container_width=True)
+
+    c = alt.Chart(df).mark_bar().encode(
+        x='IME',
+        y='MJESECNA_RATA_APN',
+        color = "IME:N",
+        tooltip = ['VRSTA_KREDITA', 'CIJENA', 'TRAJANJE', 'GODINA_POTPORE', 'MJESECNA_RATA', 'MJESECNA_RATA_APN', 'UKUPNI_IZNOS_POTPORE', 'UKUPNA_CIJENA_NEKRETNINE']
+    )
+
+    st.altair_chart(c, use_container_width=True)
+
+    c = alt.Chart(df).mark_bar().encode(
+        x='IME',
+        y='MJESECNA_RATA',
+        color = "IME:N",
+        tooltip = ['VRSTA_KREDITA', 'CIJENA', 'TRAJANJE', 'GODINA_POTPORE', 'MJESECNA_RATA', 'MJESECNA_RATA_APN', 'UKUPNI_IZNOS_POTPORE', 'UKUPNA_CIJENA_NEKRETNINE']
+    )
+
+    st.altair_chart(c, use_container_width=True)
+
+    #d = alt.Chart(df).transform_fold(
+    #    ['MJESECNA_RATA', 'MJESECNA_RATA_APN']
+    #    ).mark_bar().encode(
+    #    x=alt.X('key:N', axis=alt.Axis(title='')),
+    #    y=alt.Y('value:Q', axis=alt.Axis(title='Rata u €')),
+    #    color=alt.Color('key:N',title="",legend=None),
+    #    column = alt.Column("IME:N", title='Krediti'),
+    #    tooltip = ['VRSTA_KREDITA', 'CIJENA', 'TRAJANJE', 'GODINA_POTPORE', 'MJESECNA_RATA', 'MJESECNA_RATA_APN', 'UKUPNI_IZNOS_POTPORE', 'UKUPNA_CIJENA_NEKRETNINE']
 #
-#import pandas as pd
-#import numpy as np
-#import altair as alt
-#import streamlit as st
-#
-#with st.expander("Vizualizacije"):
-#    st.empty()
-#    CREDIT_SUMMARY["IME"] = "Temp"
-#    df = pd.DataFrame(
-#        st.session_state.states + [{**CREDIT_CONFIG, **CREDIT_SUMMARY}]
-#        )
-#
-#    c = alt.Chart(df).mark_bar().encode(
-#        x='IME',
-#        y='UKUPNA_CIJENA_NEKRETNINE',
-#        tooltip = ['VRSTA_KREDITA', 'CIJENA', 'TRAJANJE', 'GODINA_POTPORE', 'MJESECNA_RATA', 'MJESECNA_RATA_APN', 'UKUPNI_IZNOS_POTPORE', 'UKUPNA_CIJENA_NEKRETNINE']
-#    )
-#
-#    st.altair_chart(c, use_container_width=True)
-#
-#    d = alt.Chart(df).transform_fold(
-#        ['MJESECNA_RATA', 'MJESECNA_RATA_APN']
-#        ).mark_bar().encode(
-#        x=alt.X('key:N', axis=alt.Axis(title='')),
-#        y=alt.Y('value:Q', axis=alt.Axis(title='Rata u €')),
-#        color=alt.Color('key:N',title="",legend=None),
-#        column = alt.Column("IME:N", title='Krediti'),
-#        tooltip = ['VRSTA_KREDITA', 'CIJENA', 'TRAJANJE', 'GODINA_POTPORE', 'MJESECNA_RATA', 'MJESECNA_RATA_APN', 'UKUPNI_IZNOS_POTPORE', 'UKUPNA_CIJENA_NEKRETNINE']
-#
-#        ).properties(
-#            width=100
-#        )
-#    
-#    st.altair_chart(d, use_container_width=False)
-#
-#st.write("---")
-#reset = st.button("Reset")
-#if reset:
-#    st.session_state.states = []
-#    st.info('Uspješan reset!')
-#
-#
+    #    ).properties(
+    #        width=100
+    #    )
+    #
+    #st.altair_chart(d, use_container_width=True)
+
+st.write("---")
+reset = st.button("Reset")
+if reset:
+    st.session_state.states = []
+    st.info('Uspješan reset!')
+
