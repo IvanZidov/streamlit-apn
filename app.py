@@ -17,8 +17,8 @@ with open(r"./naselja.p", "rb") as input_file:
 st.set_page_config(
     page_title="APN kredit kalkulator",
     page_icon="🏠",
-   # layout="wide",
-   # initial_sidebar_state="expanded",
+    layout="wide",
+    initial_sidebar_state="expanded",
    # menu_items={
    #    'Get Help': 'https://www.extremelycoolapp.com/help',
    #    'Report a bug': "https://www.extremelycoolapp.com/bug",
