@@ -393,9 +393,8 @@ with st.expander("Vizualizacije"):
     #
     #st.altair_chart(d, use_container_width=True)
 
-st.write("---")
-reset = st.button("Reset")
-if reset:
-    st.session_state.states = []
-    st.info('Uspješan reset!')
-
+#st.write("---")
+#reset = st.button("Reset")
+#if reset:
+#    st.session_state.states = []
+#    st.info('Uspješan reset!')
