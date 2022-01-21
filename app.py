@@ -27,6 +27,7 @@ st.set_page_config(
 st.write(
     """
 # APN kredit kalkulator
+### Okvirni izračun
 """
 )
 
@@ -55,6 +56,7 @@ MJESTO = ""
 VISINA_SUBVENCIJE = 0
 with st.sidebar.expander("Postavke APN-a", expanded=True):
     GODINA_POTPORE = st.radio("Godina subvencije APN-a:", (5, 6, 7, 8, 9))
+    KVADRATURA = st.number_input("Kvadratura (m2): ", value=70, min_value=0, max_value = 999,step=1)
     MJESTO = st.selectbox("Mjesto", [""] + sorted(list(naselja.keys())))
     VISINA_SUBVENCIJE = st.number_input(
         "Visina subvencije: ",
@@ -162,10 +164,21 @@ class Kredit:
         MJESECNA_POTPORA = 0
 
         if self.VRSTA_KREDITA == "APN":
-            if self.IZNOS_KREDITA > 100000:
-                MJESECNA_RATA_APN = (100000 / self.IZNOS_KREDITA) * MJESECNA_RATA * (
+            omjer1 = 100000 / self.IZNOS_KREDITA
+            omjer2 = 1500 / (self.IZNOS_KREDITA / KVADRATURA)
+
+            if omjer1 < 1 and omjer2 < 1:
+                MJESECNA_RATA_APN = (omjer1*omjer2) * MJESECNA_RATA * (
                     1 - self.VISINA_SUBVENCIJE
-                ) + (1 - (100000 / self.IZNOS_KREDITA)) * MJESECNA_RATA
+                ) + (1 - (omjer1*omjer2)) * MJESECNA_RATA
+            elif omjer1 < 1:
+                MJESECNA_RATA_APN = omjer1 * MJESECNA_RATA * (
+                    1 - self.VISINA_SUBVENCIJE
+                ) + (1 - omjer1) * MJESECNA_RATA
+            elif omjer2 < 1:
+                MJESECNA_RATA_APN = omjer2 * MJESECNA_RATA * (
+                    1 - self.VISINA_SUBVENCIJE
+                ) + (1 - omjer2) * MJESECNA_RATA
             else:
                 MJESECNA_RATA_APN = MJESECNA_RATA * (1 - self.VISINA_SUBVENCIJE)
             MJESECNA_RATA_APN = round(MJESECNA_RATA_APN, 2)
@@ -314,6 +327,11 @@ class Kredit:
             st.metric(
                 "Ukupni troškovi", value=str(round(self.UKUPNI_TROSKOVI, 2)) + " €"
             )
+            st.write("""#### Cijena po kvadratu""")
+            st.metric(
+                "Cijena po kvadratu:", value=str(round(CIJENA/KVADRATURA, 2)) + " €"
+            )
+
             # st.write("""### Ukupno plaćeno banci:""")
             # st.metric("Ukupno plaćeno banci:", value=str(UKUPNO_PLACENO) + " €")
 
