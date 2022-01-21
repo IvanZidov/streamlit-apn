@@ -456,6 +456,35 @@ with st.expander("Vizualizacije"):
 
     st.altair_chart(c, use_container_width=True)
 
+
+st.write("---")
+html_script = """<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+.fa {
+  padding: 20px;
+  font-size: 30px;
+  width: 30px;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 50%;
+}
+.fa:hover {
+    opacity: 0.7;
+}
+.fa-linkedin {
+  color: white;
+}
+</style>
+"""
+st.markdown(html_script, unsafe_allow_html=True)
+
+
+
+st.markdown("""Ivan Židov<a href="https://www.linkedin.com/in/ivan-zidov/" class="fa fa-linkedin"></a>
+
+""", unsafe_allow_html=True)
+
+
     # d = alt.Chart(df).transform_fold(
     #    ['MJESECNA_RATA', 'MJESECNA_RATA_APN']
     #    ).mark_bar().encode(
