@@ -167,25 +167,26 @@ class Kredit:
             omjer1 = 100000 / self.IZNOS_KREDITA
             omjer2 = 1500 / (self.IZNOS_KREDITA / KVADRATURA)
 
-            if omjer1 < 1 and omjer2 < 1:
-                MJESECNA_RATA_APN = (omjer1*omjer2) * MJESECNA_RATA * (
-                    1 - self.VISINA_SUBVENCIJE
-                ) + (1 - (omjer1*omjer2)) * MJESECNA_RATA
-            elif omjer1 < 1:
-                MJESECNA_RATA_APN = omjer1 * MJESECNA_RATA * (
-                    1 - self.VISINA_SUBVENCIJE
-                ) + (1 - omjer1) * MJESECNA_RATA
+
+            if omjer1 < 1:
+
+                MJESECNA_RATA_APN = MJESECNA_RATA * (1 - omjer1 * self.VISINA_SUBVENCIJE)
+
             elif omjer2 < 1:
-                MJESECNA_RATA_APN = omjer2 * MJESECNA_RATA * (
-                    1 - self.VISINA_SUBVENCIJE
-                ) + (1 - omjer2) * MJESECNA_RATA
+                st.write("3")
+                MJESECNA_RATA_APN = MJESECNA_RATA * (1 - omjer2 * self.VISINA_SUBVENCIJE)
+
             else:
+                st.write("4")
                 MJESECNA_RATA_APN = MJESECNA_RATA * (1 - self.VISINA_SUBVENCIJE)
-            MJESECNA_RATA_APN = round(MJESECNA_RATA_APN, 2)
 
             MJESECNA_POTPORA = MJESECNA_RATA - MJESECNA_RATA_APN
             MJESECNA_POTPORA = round(MJESECNA_POTPORA, 2)
+
             UKUPNI_IZNOS_POTPORE = round(MJESECNA_POTPORA * self.GODINA_POTPORE * 12, 2)
+            MJESECNA_RATA_APN = round(MJESECNA_RATA_APN, 2)
+
+
 
         UKUPNI_KREDIT = round(MJESECNA_RATA * self.TRAJANJE * 12, 2)
         UKUPNE_KAMATE = round(UKUPNI_KREDIT - self.IZNOS_KREDITA, 2)
