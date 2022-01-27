@@ -173,11 +173,9 @@ class Kredit:
                 MJESECNA_RATA_APN = MJESECNA_RATA * (1 - omjer1 * self.VISINA_SUBVENCIJE)
 
             elif omjer2 < 1:
-                st.write("3")
                 MJESECNA_RATA_APN = MJESECNA_RATA * (1 - omjer2 * self.VISINA_SUBVENCIJE)
 
             else:
-                st.write("4")
                 MJESECNA_RATA_APN = MJESECNA_RATA * (1 - self.VISINA_SUBVENCIJE)
 
             MJESECNA_POTPORA = MJESECNA_RATA - MJESECNA_RATA_APN
